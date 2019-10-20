@@ -68,7 +68,7 @@ public class BookController {
         return getResponse(null, HttpStatus.NO_CONTENT);
     }
 
-    @ApiOperation(value="Lista de Permissões", response = Book.class, responseContainer="List")
+    @ApiOperation(value="List Books", response = Book.class, responseContainer="List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 400, message = "Invalid request parameters"),
@@ -86,6 +86,20 @@ public class BookController {
                 new ResponseDTO(offset, limit, response.getTotalPages(), response.getContent()),
                 HttpStatus.ACCEPTED
         );
+    }
+
+    @ApiOperation(value="Find a book by ID", response = Book.class, responseContainer="List")
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Success"),
+            @ApiResponse(code = 404, message = "Not found"),
+            @ApiResponse(code = 400, message = "Invalid request body"),
+            @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity findById (@PathVariable("id") String id)
+            throws DataValidationException, DataNotFoundException {
+
+        return getResponse(service.findById(id), HttpStatus.OK);
     }
 
     private ResponseEntity getResponse(Object body, HttpStatus status){
