@@ -11,7 +11,7 @@ The ultimate goal is to generate an example of communication and integration bet
 
 ### 2. Tecnologies so far
 
-- Java;
+- Java; (IN PROGRESS)
 - Kotlin; (TO DO)
 - Go; (TO DO)
 - NodeJs; (TO DO)
