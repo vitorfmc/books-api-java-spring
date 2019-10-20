@@ -10,7 +10,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookRepository extends MongoRepository<Book, String> {
 
-    @Query("{$or: [{'title': { $regex: '?0', $options: 'i'}}, {'libraryCode': { $regex: '?0', $options: 'i'}}, {'authors': { $regex: '?0', $options: 'i'}}]}")
+    @Query("{$or: [{'title': { $regex: '?0', $options: 'i'}}, " +
+            "{'libraryCode': { $regex: '?0', $options: 'i'}}, " +
+            "{'_id': '?0'}, " +
+            "{'authors': { $regex: '?0', $options: 'i'}}]}")
     Page<Book> findAllByCriteria(Pageable pageable, String q);
 
     Book findByTitle(String Title);

@@ -30,9 +30,15 @@ public class BookService {
     private BookRepository repository;
     
     public Book save(@NotNull(message = "Request body not informed") @Valid BookCreateDTO dto)
-            throws DataValidationException {
+            throws DataValidationException, DataNotFoundException {
         try{
             SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+
+            Book oldBook = findByTitle(dto.getTitle());
+            if(oldBook != null)
+                throw new DataValidationException(messageSource.getMessage("book.error.already.exists", null,
+                        null, Locale.getDefault()));
+
             Book book = new Book(dto.getLibraryCode(), dto.getTitle(), format.parse(dto.getCatalogingDate()));
             validate(book);
 
@@ -54,6 +60,16 @@ public class BookService {
 
     public void delete(String id) throws DataValidationException, DataNotFoundException {
         repository.delete(findById(id));
+    }
+
+    public Book findByTitle(String title) throws DataValidationException {
+        if(title == null){
+            String message = messageSource.getMessage("book.error.not.informed",
+                    null, null, Locale.getDefault());
+            throw new DataValidationException(message);
+        }
+
+        return repository.findByTitle(title);
     }
 
     public Book findById(String id) throws DataValidationException, DataNotFoundException {
