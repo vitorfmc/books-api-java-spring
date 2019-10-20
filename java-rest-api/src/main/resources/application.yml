@@ -1,0 +1,1 @@
+spring.data.mongodb.uri: "${SPRING_DATASOURCE_URL:mongodb://localhost:27017/books-api}"
