@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import javax.validation.*;
 import javax.validation.constraints.NotNull;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -27,8 +29,22 @@ public class BookService {
     @Autowired
     private BookRepository repository;
     
-    public Book save(@NotNull(message = "Request body not informed") @Valid BookCreateDTO dto){
-        return null;
+    public Book save(@NotNull(message = "Request body not informed") @Valid BookCreateDTO dto)
+            throws DataValidationException {
+        try{
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+            Book book = new Book(dto.getLibraryCode(), dto.getTitle(), format.parse(dto.getCatalogingDate()));
+            validate(book);
+
+            return repository.save(book);
+
+        }catch (ParseException e){
+            throw new DataValidationException(messageSource.getMessage("book.error.invalid.date", null,
+                    null, Locale.getDefault()));
+
+        }catch (DataValidationException e){
+            throw e;
+        }
     }
 
     public Book update(@NotNull(message = "The book ID is mandatory") String id,
@@ -69,7 +85,7 @@ public class BookService {
         return data;
     }
 
-    protected void validateLimitAndOffset(Integer limit, Integer offset) throws DataValidationException {
+    private void validateLimitAndOffset(Integer limit, Integer offset) throws DataValidationException {
 
         List<String> errors = new ArrayList<>();
 
@@ -87,7 +103,7 @@ public class BookService {
             throw new DataValidationException(errors);
     }
 
-    protected void validate(Object arg) throws DataValidationException {
+    private void validate(Object arg) throws DataValidationException {
         List<String> errors = new ArrayList<>();
 
         ValidatorFactory factory= Validation.buildDefaultValidatorFactory();

@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,15 +24,13 @@ import javax.validation.Valid;
 public class BookController {
 
     @Autowired
-    protected MessageSource messageSource;
-
-    @Autowired
     private BookService service;
 
     @ApiOperation(value="Create a new Book", response = Book.class)
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Success"),
-            @ApiResponse(code = 400, message = "Invalid request body")
+            @ApiResponse(code = 400, message = "Invalid request body"),
+            @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @PostMapping
     public ResponseEntity create (@Valid @RequestBody BookCreateDTO dto)
@@ -46,7 +43,8 @@ public class BookController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 400, message = "Invalid request body")
+            @ApiResponse(code = 400, message = "Invalid request body"),
+            @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @PutMapping("/{id}")
     public ResponseEntity update (@PathVariable("id") String id, @Valid @RequestBody BookCreateDTO dto)
@@ -59,7 +57,8 @@ public class BookController {
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Success"),
             @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 400, message = "Invalid request body")
+            @ApiResponse(code = 400, message = "Invalid request body"),
+            @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity delete (@PathVariable("id") String id)
@@ -72,7 +71,8 @@ public class BookController {
     @ApiOperation(value="Lista de Permissões", response = Book.class, responseContainer="List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 400, message = "Invalid request parameters")
+            @ApiResponse(code = 400, message = "Invalid request parameters"),
+            @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @GetMapping
     public ResponseEntity list (@RequestParam(value = "limit", defaultValue = "10") int limit,
@@ -88,7 +88,7 @@ public class BookController {
         );
     }
 
-    protected ResponseEntity getResponse(Object body, HttpStatus status){
+    private ResponseEntity getResponse(Object body, HttpStatus status){
         return ResponseEntity.status(status).body(body);
     }
 

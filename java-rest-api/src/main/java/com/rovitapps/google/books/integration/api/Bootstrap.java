@@ -9,6 +9,8 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 public class Bootstrap implements ApplicationRunner {
 
@@ -31,7 +33,7 @@ public class Bootstrap implements ApplicationRunner {
     private Book createBook(String title){
         Book book = bookRepository.findByTitle(title);
         if(book == null)
-            return bookRepository.save(new Book(title));
+            return bookRepository.save(new Book("A0001", title, new Date()));
         return null;
     }
 
