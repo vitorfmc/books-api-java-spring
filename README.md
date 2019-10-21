@@ -20,11 +20,13 @@ The ultimate goal is to generate an example of communication and integration bet
 
 ![Integration Diagram](https://raw.githubusercontent.com/vitorfmc/google-books-integration-api/master/integrations_chart.png)
 
-  Consumer interation steps:
-  The Consumer call the CRUD APIs and the application will retrive Book information from Google when creating and updating requests occurs;
+```
+Consumer interation steps:
+The Consumer call the CRUD APIs and the application will retrive Book information from Google when creating and updating requests occurs;
 
-  CRON interation steps:
-  2. The application will execute a CRON to automatically update Google information based on a schedulle;
+CRON interation steps:
+The application will execute a CRON to automatically update Google information based on a schedulle;
+```
 
 ### 4. Google Books Documentation
 
