@@ -18,7 +18,7 @@ The ultimate goal is to generate an example of communication and integration bet
 
 ### 3. Concept
 
-TO DO
+![Integration Diagram](https://raw.githubusercontent.com/vitorfmc/google-books-integration-api/master/integrations_chart.png)
 
 ### 4. Google Books Documentation
 
