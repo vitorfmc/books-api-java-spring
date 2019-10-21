@@ -1,1 +1,15 @@
-spring.data.mongodb.uri: "${SPRING_DATASOURCE_URL:mongodb://localhost:27017/books-api}"
+google:
+  books:
+    url: 'https://www.googleapis.com/books/v1/volumes'
+    timeout: 5000
+    cronActive: true
+
+books:
+  query:
+    limit: 10
+    days: 1
+
+spring:
+  data:
+    mongodb:
+      uri: "${SPRING_DATASOURCE_URL:mongodb://localhost:27017/books-api}"

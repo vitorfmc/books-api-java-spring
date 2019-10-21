@@ -7,6 +7,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.List;
+
 @Repository
 public interface BookRepository extends MongoRepository<Book, String> {
 
@@ -15,6 +19,8 @@ public interface BookRepository extends MongoRepository<Book, String> {
             "{'_id': '?0'}, " +
             "{'authors': { $regex: '?0', $options: 'i'}}]}")
     Page<Book> findAllByCriteria(Pageable pageable, String q);
+
+    Page<Book> findByUpdateDateBefore(Pageable pageable, Date date);
 
     Book findByTitle(String Title);
 

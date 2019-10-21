@@ -2,6 +2,7 @@ package com.rovitapps.google.books.integration.api;
 
 import com.rovitapps.google.books.integration.api.model.Book;
 import com.rovitapps.google.books.integration.api.repository.BookRepository;
+import com.rovitapps.google.books.integration.api.util.DateUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class Bootstrap implements ApplicationRunner {
     private Book createBook(String title){
         Book book = bookRepository.findByTitle(title);
         if(book == null)
-            return bookRepository.save(new Book("A0001", title, new Date()));
+            return bookRepository.save(new Book("A0001", title, DateUtils.getDateNow()));
         return null;
     }
 

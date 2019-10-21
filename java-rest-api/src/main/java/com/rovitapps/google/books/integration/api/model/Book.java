@@ -2,6 +2,7 @@ package com.rovitapps.google.books.integration.api.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rovitapps.google.books.integration.api.util.DateUtils;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
@@ -49,8 +50,8 @@ public class Book {
             setTitle(title.trim());
 
         setAuthors(new ArrayList<>());
-        setCreateDate(new Date());
-        setUpdateDate(new Date());
+        setCreateDate(DateUtils.getDateNow());
+        setUpdateDate(DateUtils.getDateNow());
         setLibraryCode(libraryCode.toUpperCase().trim());
         setCatalogingDate(catalogingDate);
         setImages(new ArrayList<>());

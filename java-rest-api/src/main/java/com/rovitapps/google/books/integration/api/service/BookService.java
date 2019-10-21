@@ -1,20 +1,42 @@
 package com.rovitapps.google.books.integration.api.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.rovitapps.google.books.integration.api.config.CronConfig;
 import com.rovitapps.google.books.integration.api.exception.DataNotFoundException;
 import com.rovitapps.google.books.integration.api.exception.DataValidationException;
+import com.rovitapps.google.books.integration.api.exception.ResponseException;
 import com.rovitapps.google.books.integration.api.model.Book;
 import com.rovitapps.google.books.integration.api.model.dto.BookCreateDTO;
 import com.rovitapps.google.books.integration.api.repository.BookRepository;
+import com.rovitapps.google.books.integration.api.util.DateUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import sun.net.www.http.HttpClient;
 
 import javax.validation.*;
 import javax.validation.constraints.NotNull;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -22,11 +44,19 @@ import java.util.Locale;
 @Service
 public class BookService {
 
+    private static final Logger LOGGER = LogManager.getLogger(CronConfig.class);
+
     @Autowired
     protected MessageSource messageSource;
 
     @Autowired
     private BookRepository repository;
+
+    @Value( "${google.books.url}" )
+    private String googleBooksURL;
+
+    @Value( "${google.books.timeout}" )
+    private int googleBooksTimeout;
     
     public Book save(@NotNull(message = "Request body not informed") @Valid BookCreateDTO dto)
             throws DataValidationException, DataNotFoundException {
@@ -38,6 +68,8 @@ public class BookService {
 
             Book book = new Book(dto.getLibraryCode(), dto.getTitle(),
                     (new SimpleDateFormat("dd/MM/yyyy")).parse(dto.getCatalogingDate()));
+            setGoogleInformation(book);
+
             validate(book);
 
             return repository.save(book);
@@ -66,6 +98,7 @@ public class BookService {
             oldBook.setLibraryCode(dto.getLibraryCode());
             oldBook.setTitle(dto.getTitle());
             oldBook.setCatalogingDate((new SimpleDateFormat("dd/MM/yyyy")).parse(dto.getCatalogingDate()));
+            setGoogleInformation(oldBook);
 
             validate(oldBook);
 
@@ -151,5 +184,47 @@ public class BookService {
 
             throw new DataValidationException(errors);
         }
+    }
+
+    /**
+     * Integrates with Google to verify if the books that are X Days before now needs to be updated.
+     * @param days Quantity of days before today at the beginning of the day
+     * @param limit Limit of Books to be updated
+     */
+    public void updateBooks(int days, int limit) {
+        Page<Book> books = repository.findByUpdateDateBefore(PageRequest.of(0, limit),
+                DateUtils.getDateYesterday());
+
+        for(Book book: books)
+            setGoogleInformation(book);
+    }
+
+    public Book setGoogleInformation(Book book){
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
+        SimpleClientHttpRequestFactory rf = (SimpleClientHttpRequestFactory) restTemplate
+                .getRequestFactory();
+        rf.setReadTimeout(googleBooksTimeout);
+        rf.setConnectTimeout(googleBooksTimeout);
+
+        String url = googleBooksURL + "/?q=" + book.getTitle() + "+intitle";
+
+        try{
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            if (!response.getStatusCode().is2xxSuccessful())
+                throw new ResponseException(messageSource.getMessage("generic.error.offset",
+                        null, Locale.getDefault()), response.getBody());
+
+            JsonObject convertedObject = new Gson().fromJson(response.getBody(), JsonObject.class);
+            //TO DO
+
+        }catch (ResponseException e){
+            LOGGER.error("[GOOGLE INTEGRATION] Error: " + e.getData(), e);
+
+        }catch (Exception e){
+            LOGGER.error("[GOOGLE INTEGRATION] Error: " + e, e);
+        }
+
+        return book;
     }
 }
