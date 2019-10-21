@@ -2,6 +2,7 @@ package com.rovitapps.google.books.integration.api.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.rovitapps.google.books.integration.api.config.CronConfig;
@@ -207,7 +208,7 @@ public class BookService {
         rf.setReadTimeout(googleBooksTimeout);
         rf.setConnectTimeout(googleBooksTimeout);
 
-        String url = googleBooksURL + "/?q=" + book.getTitle() + "+intitle";
+        String url = googleBooksURL + "/?q=+intitle:" + book.getTitle();
 
         try{
             ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
@@ -216,7 +217,23 @@ public class BookService {
                         null, Locale.getDefault()), response.getBody());
 
             JsonObject convertedObject = new Gson().fromJson(response.getBody(), JsonObject.class);
-            //TO DO
+            JsonArray items = convertedObject.getAsJsonArray("items");
+            JsonObject googleBook = null;
+            int i = 0;
+
+            while(i < items.size() && googleBook == null){
+                JsonObject item = items.get(i).getAsJsonObject();
+                String googleTitle = item.get("volumeInfo").getAsJsonObject().get("title").getAsString();
+                if(googleTitle.equals(book.getTitle())){
+                    googleBook = item;
+                }else{
+                    i++;
+                }
+            }
+
+            if(googleBook != null){
+                //TO DO
+            }
 
         }catch (ResponseException e){
             LOGGER.error("[GOOGLE INTEGRATION] Error: " + e.getData(), e);
