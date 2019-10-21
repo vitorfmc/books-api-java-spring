@@ -15,7 +15,7 @@ import java.util.List;
 public class Book {
 
     @Id
-    private String Id;
+    private String id;
 
     @NotNull(message = "Title is mandatory")
     private String title;
@@ -44,11 +44,14 @@ public class Book {
     public Book(@NotNull String libraryCode,
                 @NotNull String title,
                 @NotNull Date catalogingDate) {
-        setTitle(title.toUpperCase().trim());
+
+        if(title != null)
+            setTitle(title.trim());
+
         setAuthors(new ArrayList<>());
         setCreateDate(new Date());
         setUpdateDate(new Date());
-        setLibraryCode(libraryCode);
+        setLibraryCode(libraryCode.toUpperCase().trim());
         setCatalogingDate(catalogingDate);
         setImages(new ArrayList<>());
     }

@@ -28,22 +28,17 @@ public class BookController {
 
     @ApiOperation(value="Create a new Book", response = Book.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Success"),
-            @ApiResponse(code = 400, message = "Invalid request body"),
             @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @PostMapping
     public ResponseEntity create (@Valid @RequestBody BookCreateDTO dto)
-            throws DataValidationException {
+            throws DataValidationException, DataNotFoundException {
 
         return getResponse(service.save(dto), HttpStatus.CREATED);
     }
 
     @ApiOperation(value="Update a Book by ID", response = Book.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 400, message = "Invalid request body"),
             @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @PutMapping("/{id}")
@@ -55,9 +50,6 @@ public class BookController {
 
     @ApiOperation(value="Remove a Book")
     @ApiResponses(value = {
-            @ApiResponse(code = 204, message = "Success"),
-            @ApiResponse(code = 404, message = "Not found"),
-            @ApiResponse(code = 400, message = "Invalid request body"),
             @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @DeleteMapping("/{id}")
@@ -70,8 +62,6 @@ public class BookController {
 
     @ApiOperation(value="List Books", response = Book.class, responseContainer="List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Success"),
-            @ApiResponse(code = 400, message = "Invalid request parameters"),
             @ApiResponse(code = 504, message = "Method not allowed. The URL is incorrect.")
     })
     @GetMapping

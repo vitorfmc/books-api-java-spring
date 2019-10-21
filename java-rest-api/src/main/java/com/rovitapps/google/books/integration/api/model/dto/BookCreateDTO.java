@@ -24,4 +24,10 @@ public class BookCreateDTO {
             message="The date format should be dd/mm/yyyy")
     private String catalogingDate;
 
+    public void setTitle(String title) {
+        if(title != null)
+            title = title.trim();
+
+        this.title = title;
+    }
 }

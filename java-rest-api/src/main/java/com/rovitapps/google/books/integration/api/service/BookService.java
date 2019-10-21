@@ -18,7 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.NoSuchElementException;
 
 @Service
 public class BookService {
@@ -32,14 +31,13 @@ public class BookService {
     public Book save(@NotNull(message = "Request body not informed") @Valid BookCreateDTO dto)
             throws DataValidationException, DataNotFoundException {
         try{
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
-
             Book oldBook = findByTitle(dto.getTitle());
             if(oldBook != null)
                 throw new DataValidationException(messageSource.getMessage("book.error.already.exists", null,
                         null, Locale.getDefault()));
 
-            Book book = new Book(dto.getLibraryCode(), dto.getTitle(), format.parse(dto.getCatalogingDate()));
+            Book book = new Book(dto.getLibraryCode(), dto.getTitle(),
+                    (new SimpleDateFormat("dd/MM/yyyy")).parse(dto.getCatalogingDate()));
             validate(book);
 
             return repository.save(book);
@@ -47,19 +45,45 @@ public class BookService {
         }catch (ParseException e){
             throw new DataValidationException(messageSource.getMessage("book.error.invalid.date", null,
                     null, Locale.getDefault()));
-
-        }catch (DataValidationException e){
-            throw e;
         }
     }
 
     public Book update(@NotNull(message = "The book ID is mandatory") String id,
-                       @NotNull(message = "Request body not informed") @Valid BookCreateDTO dto) {
-        return null;
+                       @NotNull(message = "Request body not informed") @Valid BookCreateDTO dto)
+            throws DataValidationException, DataNotFoundException {
+
+        try{
+            Book oldBook = findById(id);
+            if(oldBook == null)
+                throw new DataValidationException(messageSource.getMessage("book.error.not.exist", null,
+                        null, Locale.getDefault()));
+
+            Book book = findByTitle(dto.getTitle());
+            if(book !=null && !book.getId().equals(id))
+                throw new DataValidationException(messageSource.getMessage("book.error.already.exists", null,
+                        null, Locale.getDefault()));
+
+            oldBook.setLibraryCode(dto.getLibraryCode());
+            oldBook.setTitle(dto.getTitle());
+            oldBook.setCatalogingDate((new SimpleDateFormat("dd/MM/yyyy")).parse(dto.getCatalogingDate()));
+
+            validate(oldBook);
+
+            return repository.save(oldBook);
+
+        }catch (ParseException e){
+            throw new DataValidationException(messageSource.getMessage("book.error.invalid.date", null,
+                    null, Locale.getDefault()));
+        }
     }
 
     public void delete(String id) throws DataValidationException, DataNotFoundException {
-        repository.delete(findById(id));
+        Book book = findById(id);
+        if(book == null)
+            throw new DataValidationException(messageSource.getMessage("book.error.not.exist",
+                    null, null, Locale.getDefault()));
+
+        repository.delete(book);
     }
 
     public Book findByTitle(String title) throws DataValidationException {
@@ -72,20 +96,14 @@ public class BookService {
         return repository.findByTitle(title);
     }
 
-    public Book findById(String id) throws DataValidationException, DataNotFoundException {
+    public Book findById(String id) throws DataNotFoundException {
         if(id == null){
             String message = messageSource.getMessage("book.error.not.informed",
                     null, null, Locale.getDefault());
             throw new DataNotFoundException(message);
         }
 
-        try{
-            return repository.findById(id).get();
-        }catch (NoSuchElementException e){
-            String message = messageSource.getMessage("book.error.not.exist",
-                    null, null, Locale.getDefault());
-            throw new DataValidationException(message);
-        }
+        return repository.findById(id, Book.class);
     }
 
     public Page<Book> findAll(int limit, int offset, String q) throws DataValidationException {

@@ -17,4 +17,6 @@ public interface BookRepository extends MongoRepository<Book, String> {
     Page<Book> findAllByCriteria(Pageable pageable, String q);
 
     Book findByTitle(String Title);
+
+    Book findById(String id, Class<Book> bookClass);
 }
