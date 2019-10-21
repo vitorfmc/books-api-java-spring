@@ -51,15 +51,22 @@ $ gradle buildRun
     
 ### 4. Documentation
 
-**Main goal:**
+1. Main goal:
 
    https://github.com/vitorfmc/google-books-integration-api 
 
-**For API documentation:** 
+2. For API documentation: 
 
     **${APPLICATION_DOMAIN}**/swagger-ui.html
 
-**More information about the API:**
+3. Tecnologies:
+
+- Java 1.8;
+- SpringBoot 2.2.0;
+- Gradle 5.6.2;
+- MongoDB;
+
+4. More information about the API:
 
 - The API architeture is base on MVC design pattern;
 - All the requests are mapped on BookController class;
