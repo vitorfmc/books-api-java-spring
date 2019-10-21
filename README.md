@@ -4,6 +4,8 @@
 
 Follow me: https://www.linkedin.com/in/vitor-cordeiro-921a5697/
 
+---
+
 ### 1. Introduction
 
 This repository brings together a number of identical APIs in different languages, where each one of them integrates with [Google Books](https://developers.google.com/books/docs/v1/using) to generate its own [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete) service.
