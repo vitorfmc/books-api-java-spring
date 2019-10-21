@@ -4,18 +4,15 @@
 
 Follow me: https://www.linkedin.com/in/vitor-cordeiro-921a5697/
 
+---
+
 ### 1. Introduction
 
 Study: This is a Java REST application that integrates with Google Books to generate a book library.
 
-### 2. Tecnologies
+---
 
-- Java 1.8;
-- Gradle 3.5;
-- MongoDB;
-- Docker;
-
-### 3. Installation
+### 2. Installation
 
 1. Install [SDKMAN](https://sdkman.io/)
 
@@ -41,16 +38,31 @@ $ sdk use gradle 3.5
     
     3.4 Enable the anotation processor by checking "Enable Annotation Processing" at: File > Settings... > Build, Execution, Deployment >
    Compiler > Annotation Processors
+   
+---
 
-### 4. Executing
-
-- Na IDE: Rodar método main da classe "Application.java"
-- No terminal: Ir para raiz do projeto e rodar o comando:
+### 3. Executing
 
 ```
 $ gradle buildRun
 ```
-    
-### 5. Documentation
 
-Documentação da API: **${APPLICATION_DOMAIN}**/swagger-ui.html
+---
+    
+### 4. Documentation
+
+**Main goal:**
+
+   https://github.com/vitorfmc/google-books-integration-api 
+
+**For API documentation:** 
+
+    **${APPLICATION_DOMAIN}**/swagger-ui.html
+
+**More information about the API:**
+
+- The API architeture is base on MVC design pattern;
+- All the requests are mapped on BookController class;
+- All the errors are handled at CustomGlobalExceptionHandler class;
+- The CronConfig class is responsable to schedule calls to Google API;  
+
