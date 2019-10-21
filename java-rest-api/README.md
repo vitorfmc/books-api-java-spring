@@ -61,15 +61,15 @@ $ gradle buildRun
 
 3. Tecnologies:
 
-- Java 1.8;
-- SpringBoot 2.2.0;
-- Gradle 5.6.2;
-- MongoDB;
+    - Java 1.8;
+    - SpringBoot 2.2.0;
+    - Gradle 5.6.2;
+    - MongoDB;
 
 4. More information about the API:
 
-- The API architeture is base on MVC design pattern;
-- All the requests are mapped on BookController class;
-- All the errors are handled at CustomGlobalExceptionHandler class;
-- The CronConfig class is responsable to schedule calls to Google API;  
+    - The API architeture is base on MVC design pattern;
+    - All the requests are mapped on BookController class;
+    - All the errors are handled at CustomGlobalExceptionHandler class;
+    - The CronConfig class is responsable to schedule calls to Google API;  
 
