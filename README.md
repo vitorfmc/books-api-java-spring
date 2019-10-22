@@ -38,15 +38,11 @@ The application will execute a CRON to automatically update Google information b
 
 ### 4. Documentation
 
-**Google books:**
+**Google books:** https://developers.google.com/books/docs/v1/using (Last Visit: 21/10/2019)
 
-https://developers.google.com/books/docs/v1/using (Last Visit: 21/10/2019)
+**Postman requests (Import and use in Postman):** [post_man.json](https://raw.githubusercontent.com/vitorfmc/google-books-integration-api/master/postman_collection.json)
 
-**Postman requests (Import and use in Postman):**
-
-[post_man.json](https://raw.githubusercontent.com/vitorfmc/google-books-integration-api/master/postman_collection.json)
-
-**Request:**
+**Requests:**
 
 [GET] /v1/book?q=
 
