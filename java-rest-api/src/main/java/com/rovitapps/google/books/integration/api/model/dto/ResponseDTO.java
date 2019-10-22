@@ -12,7 +12,7 @@ public class ResponseDTO {
 
     int offset;
     int limit;
-    int total;
+    long totalElements;
     Object content;
 
 }

@@ -73,7 +73,7 @@ public class BookController {
         Page<Book> response = service.findAll(limit, offset, q);
 
         return getResponse(
-                new ResponseDTO(offset, limit, response.getTotalPages(), response.getContent()),
+                new ResponseDTO(offset, limit, response.getTotalElements(), response.getContent()),
                 HttpStatus.ACCEPTED
         );
     }

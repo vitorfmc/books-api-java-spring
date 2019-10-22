@@ -2,7 +2,7 @@ package com.rovitapps.google.books.integration.api.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.rovitapps.google.books.integration.api.util.DateUtils;
+import com.rovitapps.google.books.integration.api.util.Utils;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
@@ -29,11 +29,6 @@ public class Book {
     @NotNull(message = "Cataloging Date is mandatory")
     private Date catalogingDate;
 
-    private List<String> authors;
-
-    //@DBRef
-    private List<Image> images;
-
     @JsonIgnore
     @NotNull(message = "Create Date is mandatory")
     private Date createDate;
@@ -41,6 +36,13 @@ public class Book {
     @JsonIgnore
     @NotNull(message = "Update Date is mandatory")
     private Date updateDate;
+
+    private String googleBookId;
+
+    private List<String> authors;
+
+    //@DBRef
+    private List<Image> images;
 
     public Book(@NotNull String libraryCode,
                 @NotNull String title,
@@ -50,8 +52,8 @@ public class Book {
             setTitle(title.trim());
 
         setAuthors(new ArrayList<>());
-        setCreateDate(DateUtils.getDateNow());
-        setUpdateDate(DateUtils.getDateNow());
+        setCreateDate(Utils.getDateNow());
+        setUpdateDate(Utils.getDateNow());
         setLibraryCode(libraryCode.toUpperCase().trim());
         setCatalogingDate(catalogingDate);
         setImages(new ArrayList<>());

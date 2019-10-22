@@ -6,10 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import java.time.ZonedDateTime;
+import org.springframework.cache.annotation.Cacheable;
 import java.util.Date;
-import java.util.List;
 
 @Repository
 public interface BookRepository extends MongoRepository<Book, String> {
@@ -22,7 +20,7 @@ public interface BookRepository extends MongoRepository<Book, String> {
 
     Page<Book> findByUpdateDateBefore(Pageable pageable, Date date);
 
-    Book findByTitle(String Title);
+    Book findByTitleOrLibraryCode(String Title, String libraryCode);
 
     Book findById(String id, Class<Book> bookClass);
 }
