@@ -36,6 +36,36 @@ The application will execute a CRON to automatically update Google information b
 
 ---
 
-### 4. Google Books Documentation
+### 4. Documentation
+
+**Google books:**
 
 https://developers.google.com/books/docs/v1/using (Last Visit: 21/10/2019)
+
+**Postman requests (Import and use in Postman):**
+
+[post_man.json](https://raw.githubusercontent.com/vitorfmc/google-books-integration-api/master/postman_collection.json)
+
+**Request:**
+
+[GET] /v1/book?q=
+
+[POST] /v1/book
+
+Body: { "title":"String", "libraryCode":"String", "catalogingDate":"String"}
+
+Restrictions:
+- Title must be unique;
+- Code must be unique and can only contains letters and numbers;
+- Cataloging date must be a string with the following format: dd/mm/yyyy
+
+[DELETE] /v1/book/{id}
+
+[PUT] /v1/book/{id}
+
+Body: { "title":"String", "libraryCode":"String", "catalogingDate":"String"}
+
+Restrictions:
+- Title must be unique;
+- Code must be unique and can only contains letters and numbers;
+- Cataloging date must be a string with the following format: dd/mm/yyyy
