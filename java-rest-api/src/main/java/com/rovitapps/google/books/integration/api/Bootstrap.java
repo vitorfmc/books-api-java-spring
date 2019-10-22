@@ -31,8 +31,10 @@ public class Bootstrap implements ApplicationRunner {
     }
     private Book createBook(String title, String libraryCode){
         Book book = bookRepository.findByTitleOrLibraryCode(title, libraryCode);
-        if(book == null)
-            return bookRepository.save(new Book("A0001", title, Utils.getDateNow()));
+        if(book == null){
+            book = new Book("A0001", title, Utils.getDateNow());
+            return bookRepository.save(book);
+        }
         return null;
     }
 

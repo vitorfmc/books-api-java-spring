@@ -36,7 +36,13 @@ public class GoogleService {
     @Value( "${google.books.timeout}" )
     private int googleBooksTimeout;
 
-    public Book setGoogleInformation(Book book) {
+    /**
+     * Get Authors and images from Google Books API, based on Book title.
+     * The Google API can return more than one result, in that cases the first one will be used.
+     * @param book Book that need to be updated
+     * @return Book with new information
+     */
+    public void setGoogleInformation(Book book) {
 
         try{
             JsonObject response = doGet(googleBooksURL + "/?q=+intitle:" + book.getTitle());
@@ -59,7 +65,6 @@ public class GoogleService {
                             .get("imageLinks").getAsJsonObject().get("thumbnail").getAsString();
 
                     String base64Img = Utils.urlToBase64(imageUrl);
-
                     book.getImages().add(new Image(imageUrl, base64Img));
 
                 }catch (Exception e){
@@ -79,8 +84,6 @@ public class GoogleService {
         }catch (Exception e){
             LOGGER.error("[GOOGLE INTEGRATION] Error: " + e, e);
         }
-
-        return book;
     }
 
     private JsonObject findBook(String title, JsonArray items){
