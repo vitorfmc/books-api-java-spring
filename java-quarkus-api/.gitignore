@@ -6,6 +6,7 @@ build/
 .classpath
 .settings/
 bin/
+infra/deploy-output.yaml
 
 # IntelliJ
 .idea

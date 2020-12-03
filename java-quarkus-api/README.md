@@ -5,7 +5,7 @@ This a Quarkus study project that integrates with Google Books API.
 API Documentation: http://.../swagger-ui/#/
 
 
-## 1. Thecnologies
+## 1. Technologies
 
 * Quakus Framework (https://quarkus.io/);
 * GraalVM;
@@ -36,11 +36,11 @@ If you want to build an _über-jar_, execute the following command:
 
 The application is now runnable using `java -jar build/quarkus-google-books-integration-api-1.0.0-SNAPSHOT-runner.jar`.
 
-####2.3 Creating a native executable
+####2.3 Send to AWS
 
-You can create a native executable using: 
+To deploy the application throw cloudformation, use the script: 
 ```shell script
-./gradlew build -Dquarkus.package.type=native
+./infra/deploy-samcli.sh dev
 ```
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using: 

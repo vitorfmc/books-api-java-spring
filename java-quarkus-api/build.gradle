@@ -8,8 +8,6 @@ repositories {
     mavenCentral()
 }
 
-// 1. Adicionar ext na mão
-
 ext {
     awsSdkBaseLine = "1.11.793"
 }

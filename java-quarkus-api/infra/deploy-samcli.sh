@@ -26,7 +26,7 @@ sam package --template-file ./infra/deploy.yaml --profile personal --s3-bucket $
     --output-template-file ./infra/deploy-output.yaml --region us-east-1 --force-upload || die 'Packing template'
 
 sam deploy --template-file ./infra/deploy-output.yaml --profile personal --region us-east-1 --s3-bucket $bucket \
-    --stack-name books-api-$env --capabilities CAPABILITY_NAMED_IAM CAPABILITY_IAM --parameter-overrides Stage=$env || die 'Packing deploy'
+    --stack-name books-api-$env --capabilities CAPABILITY_NAMED_IAM --parameter-overrides Stage=$env || die 'Packing deploy'
 
 echo "==============================================="
 echo "3. Delete temp file (sudo)"
