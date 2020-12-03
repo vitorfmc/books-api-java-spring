@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+// 1. Adicionar ext na mão
+
+ext {
+    awsSdkBaseLine = "1.11.793"
+}
+
+
+dependencies {
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-amazon-lambda-http'
+    implementation 'io.quarkus:quarkus-amazon-lambda-xray'
+    implementation 'io.quarkus:quarkus-hibernate-validator'
+    implementation 'io.quarkus:quarkus-rest-client'
+    implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation 'io.quarkus:quarkus-smallrye-openapi' //Document your REST APIs with OpenAPI - comes with Swagger UI
+    implementation 'io.quarkus:quarkus-smallrye-fault-tolerance' //Define fault-tolerant services
+    implementation 'io.quarkus:quarkus-smallrye-health' //Monitor service health
+    implementation 'io.quarkus:quarkus-arc' //Dependency Injection
+    
+    implementation 'org.mapstruct:mapstruct:1.3.1.Final'
+    implementation 'org.mapstruct:mapstruct-processor:1.3.1.Final'
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.3.1.Final"
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.quarkus:quarkus-junit5-mockito'
+    testImplementation 'io.rest-assured:rest-assured'
+    testImplementation "org.testcontainers:junit-jupiter:1.15.0-rc2"
+    testImplementation "org.testcontainers:localstack:1.15.0-rc2"
+}
+
+group 'teste.vitor.cordeiro'
+version '1.0.0-SNAPSHOT'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}

@@ -1,0 +1,310 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: 'Stack to create APIGATEWAY+LAMBDA for Google Integration'
+
+Parameters:
+  Stage:
+    Type: 'String'
+    Default: 'dev'
+    AllowedValues:
+      - 'dev'
+      - 'hml'
+      - 'prd'
+    Description: ''
+
+Mappings:
+  EnvironmentMap:
+    ApiGatewayKeyValue:
+      dev: 'Z'
+      hml: 'X'
+      prd: 'Y'
+  Google:
+    URL:
+      dev: 'https://www.googleapis.com'
+      hml: 'https://www.googleapis.com'
+      prd: 'https://www.googleapis.com'
+  Network:
+    securityGroupIds:
+      dev: 'sg-000...'
+      hml: 'sg-000...'
+      prd: 'sg-000...'
+    subnetIds:
+      dev: 'subnet-x, subnet-y'
+      hml: 'subnet-x, subnet-y'
+      prd: 'subnet-x, subnet-y'
+    allowedIp:
+      dev: 0.0.0.0/0
+      hml: 0.0.0.0/0
+      prd: 0.0.0.0/0
+
+Resources:
+
+  ################################################################################
+  # 1. IAM ROLE FOR LAMBDA                                                       #
+  ################################################################################
+  BooksAPILambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "BooksAPILambdaRole-${Stage}"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
+  ################################################################################
+  # 2. LAMBDA FUNCTION                                                           #
+  ################################################################################
+  BooksAPILambdaFunction:
+    Type: 'AWS::Serverless::Function'
+    DependsOn: BooksAPILambdaRole
+    Properties:
+      FunctionName: !Sub 'books-api-lambda-${Stage}'
+      Description: 'Call Google Books API'
+      Handler: not.used.in.provided.runtime
+      Runtime: provided
+      CodeUri: ../build/function.zip
+      MemorySize: 256
+      Timeout: 30
+      Policies: AWSLambdaVPCAccessExecutionRole
+      AutoPublishAlias: !Ref Stage
+      Role: !GetAtt BooksAPILambdaRole.Arn
+      Environment:
+        Variables:
+          GOOGLE_API_URL: !FindInMap ['Google', 'URL', !Ref 'Stage']
+ #     VpcConfig:
+ #       SecurityGroupIds: !Split [',', !FindInMap ['Network', 'securityGroupIds', !Ref 'Stage']]
+ #       SubnetIds: !Split [',', !FindInMap ['Network', 'subnetIds', !Ref 'Stage']]
+
+
+  ################################################################################
+  # 3. LAMBDA LOGGROUP ON CLOUDWATCH                                             #
+  ################################################################################
+
+  BooksAPILambdaFunctionLogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    DependsOn: 'BooksAPILambdaFunction'
+    Properties:
+      LogGroupName: !Join ["", ["/aws/lambda/", !Ref BooksAPILambdaFunction]]
+      RetentionInDays: 14
+
+  ################################################################################
+  # 4. API GATEWAY                                                               #
+  ################################################################################
+  BooksAPIGateway:
+    Type: AWS::Serverless::Api
+    DependsOn:
+      - BooksAPILambdaFunction
+    Properties:
+      Name: !Sub "${AWS::StackName}"
+      StageName: !Sub "${Stage}"
+      EndpointConfiguration: REGIONAL
+      Auth:
+        ApiKeyRequired: true
+        ResourcePolicy:
+          CustomStatements:
+            - Effect: Allow
+              Principal: "*"
+              Action:
+                - execute-api:Invoke
+              Resource: execute-api:/*/*/*
+            - Effect: Deny
+              Principal: "*"
+              Action:
+                - execute-api:Invoke
+              Resource: execute-api:/*/*/*
+              Condition:
+                NotIpAddress:
+                  aws:SourceIp:
+                    - !FindInMap [Network, allowedIp, !Ref Stage]
+      DefinitionBody:
+        swagger: '2.0'
+        info:
+          version: '1.0.0'
+        schemes:
+          - "http"
+        paths:
+          /book:
+            get:
+              summary: Consult book information on Google 
+              description: Consult information on a book by title
+              consumes:
+                - application/json
+              produces:
+                - application/json
+              parameters:
+                - name: title
+                  in: query
+                  description: title - Book title
+                  required: true
+                  type: string
+                - name: limit
+                  in: query
+                  description: limit - Results amount per page
+                  type: integer
+                  default: 10
+                - name: offset
+                  in: query
+                  description: offset - Results Current page
+                  type: integer
+                  default: 0
+              responses:
+                '200':
+                  description: '200 response'
+                  schema:
+                    $ref: "#/definitions/Response"
+              x-amazon-apigateway-integration:
+                uri:
+                  Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BooksAPILambdaFunction.Arn}/invocations'
+                responses:
+                  "default":
+                    statusCode: '200'
+                passthroughBehavior: when_no_match
+                httpMethod: POST #always POST
+                contentHandling: "CONVERT_TO_TEXT"
+                type: aws_proxy
+                requestTemplates:
+                  application/json: "{\"failureStatus\" : $input.params('status')\n}"
+
+        definitions:
+          Response:
+            properties:
+              errors:
+                collectionFormat: csv
+                description: List of validation errors
+                items:
+                  type: string
+              requestId:
+                type: string
+                description: Request ID for further investigations
+              data:
+                type: array
+                collectionFormat: csv
+                description: List of Book results
+                items:
+                  type: object
+                  description: Book
+                  properties:
+                    authors:
+                      type: array
+                      collectionFormat: csv
+                      description: Authors
+                      items:
+                        type: string
+                    categories:
+                      type: array
+                      collectionFormat: csv
+                      description: Categories
+                      items:
+                        type: string
+                    description:
+                      type: string
+                      description: Description
+                    pageCount:
+                      type: integer
+                      description: Number of pages in the Book
+                    publishedDate:
+                      type: string
+                      description: PublishDate
+                    publisher:
+                      type: string
+                      description: Publisher
+                    title:
+                      type: string
+                      description: Title
+                    thumbnail:
+                      type: object
+                      description: Book cover image properties
+                      properties:
+                        originalUrl:
+                          type: string
+                          description: Title
+                        base64:
+                          type: string
+                          description: base64 thumbnail of the book cover
+              searchInfo:
+                type: object
+                description: Search info
+                properties:
+                  limit:
+                    type: integer
+                    description: Results amount per page
+                  offset:
+                    type: integer
+                    description: Current page
+
+  ################################################################################
+  # 5. Permissionamento do Lambda ao API Gateway                                 #
+  ################################################################################
+  CallbackLambdaPermission:
+    Type: "AWS::Lambda::Permission"
+    DependsOn:
+      - BooksAPILambdaFunction
+      - BooksAPIGateway
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref BooksAPILambdaFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Join [
+        "", [
+        "arn:aws:execute-api:",
+        { "Ref": "AWS::Region" }, ":",
+        { "Ref": "AWS::AccountId" }, ":",
+        !Ref BooksAPIGateway,
+        "/*/GET/book"
+      ]
+      ]
+  ################################################################################
+  # 6. Definindo API KEYS                                                        #
+  ################################################################################
+  BooksAPIGatewayApiKey:
+    Type: AWS::ApiGateway::ApiKey
+    DependsOn: BooksAPIGateway
+    Properties:
+      Description: !Sub "chave para acesso à API ${AWS::StackName}"
+      Enabled: true
+      GenerateDistinctId: false
+      Name: !Sub "${AWS::StackName}"
+      Value: !FindInMap [EnvironmentMap, ApiGatewayKeyValue, !Ref Stage]
+
+  ################################################################################
+  # 7. Definindo Plano de Uso de API                                             #
+  ################################################################################
+  BooksAPIGatewayUsagePlan:
+    Type: AWS::ApiGateway::UsagePlan
+    DependsOn:
+      - BooksAPIGatewayApiKey
+      - BooksAPIGateway
+      - CallbackLambdaPermission
+      - BooksAPILambdaFunction
+    Properties:
+      ApiStages:
+        - ApiId: !Ref BooksAPIGateway
+          Stage: !Sub "${Stage}"
+      Description: !Join [" ", [{"Ref": "AWS::StackName"}, "usage plan"]]
+      Quota:
+        Limit: 20000
+        Period: MONTH
+      Throttle:
+        BurstLimit: 30
+        RateLimit: 30
+      UsagePlanName: !Join ["", [{"Ref": "AWS::StackName"}, "-usage-plan"]]
+
+  ################################################################################
+  # 8. Vinculando Plano de Uso e Keys à API criada                               #
+  ################################################################################
+  BooksAPIGatewayUsagePlanKey:
+    Type: AWS::ApiGateway::UsagePlanKey
+    DependsOn: BooksAPIGatewayUsagePlan
+    Properties:
+      KeyId: !Ref BooksAPIGatewayApiKey
+      KeyType: API_KEY
+      UsagePlanId: !Ref BooksAPIGatewayUsagePlan
+
