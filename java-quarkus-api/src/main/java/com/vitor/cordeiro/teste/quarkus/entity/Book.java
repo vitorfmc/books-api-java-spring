@@ -1,8 +1,11 @@
 package com.vitor.cordeiro.teste.quarkus.entity;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.util.Date;
 import java.util.List;
 
+@RegisterForReflection
 public class Book {
 
     private String title;

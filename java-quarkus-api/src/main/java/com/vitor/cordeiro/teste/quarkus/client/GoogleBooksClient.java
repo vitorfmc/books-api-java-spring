@@ -24,8 +24,8 @@ public interface GoogleBooksClient {
     GoogleBooksResponse getBook(
             @QueryParam("q") String q,
             @QueryParam("maxResults") Integer maxResults,
-            @QueryParam("startIndex") Integer startIndex
-
+            @QueryParam("startIndex") Integer startIndex,
+            @QueryParam("langRestrict") String langRestrict
     );
 
 }

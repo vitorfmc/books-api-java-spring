@@ -32,10 +32,13 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
 
         try {
             GoogleBooksClient client = clientBuilder.build(url);
-            return client.getBook("+intitle:" + q, limit, offset);
+
+            LOG.infof("[GOOGLE SERVICE] Invoked: %s", url + "/books/v1/volumes?q=+intitle:" + q);
+
+            return client.getBook("+intitle:" + q, limit, offset, "pt");
 
         } catch (InvalidCredentialResponseStatusException | MalformedURLException e) {
-            LOG.errorf("Erro interno ao enviar o SMS: %s", e.getMessage());
+            LOG.errorf("[GOOGLE SERVICE] Error: %s", e.getMessage());
             throw new GoogleApiGenericException(e.getMessage());
 
         } catch (Exception e) {

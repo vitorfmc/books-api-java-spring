@@ -1,5 +1,8 @@
 package com.vitor.cordeiro.teste.quarkus.entity;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
+@RegisterForReflection
 public class Image {
 
     private String originalUrl;
