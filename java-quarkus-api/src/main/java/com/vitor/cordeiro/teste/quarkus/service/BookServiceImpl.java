@@ -1,5 +1,6 @@
 package com.vitor.cordeiro.teste.quarkus.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vitor.cordeiro.teste.quarkus.entity.Book;
 import com.vitor.cordeiro.teste.quarkus.entity.Image;
 import com.vitor.cordeiro.teste.quarkus.exception.DataValidationException;
@@ -11,6 +12,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +27,8 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getBook(String q, Integer limit, Integer offset)
             throws GoogleApiGenericException, DataValidationException {
+
+        LOG.info("[GOOGLE SERVICE] Begin");
 
         var googleBook = googleService.getBookByTitle(q, limit, offset);
         List<Book> response = new ArrayList<>();
@@ -61,6 +65,28 @@ public class BookServiceImpl implements BookService {
                     }
                 }
             ).collect(Collectors.toList());
+        }
+
+        try{
+            var jsonResponse = response.stream()
+                    .map(x-> {
+                        var book = new HashMap<String, Object>();
+                        book.put("title ", x.getTitle());
+                        book.put("authors ", x.getAuthors());
+                        book.put("categories ", x.getCategories());
+                        book.put("publisher ", x.getPublisher());
+                        book.put("publishedDate ", x.getPublishedDate());
+                        book.put("description ", x.getDescription());
+                        book.put("pageCount", x.getPageCount());
+                        book.put("thumbnail", null);
+                        return book;
+                    })
+                    .collect(Collectors.toList());
+            LOG.infof("[GOOGLE SERVICE] End. Response %s",
+                    (new ObjectMapper().writer().withDefaultPrettyPrinter()).writeValueAsString(jsonResponse));
+
+        }catch (Exception e){
+            LOG.info("[GOOGLE SERVICE] Begin");
         }
 
         return response;

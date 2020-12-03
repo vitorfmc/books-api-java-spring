@@ -15,7 +15,7 @@ Parameters:
 Mappings:
   EnvironmentMap:
     ApiGatewayKeyValue:
-      dev: 'z'
+      dev: 'Z'
       hml: 'X'
       prd: 'Y'
   Google:
@@ -78,6 +78,7 @@ Resources:
       Role: !GetAtt BooksAPILambdaRole.Arn
       Environment:
         Variables:
+          DISABLE_SIGNAL_HANDLERS: true
           GOOGLE_API_URL: !FindInMap ['Google', 'URL', !Ref 'Stage']
  #     VpcConfig:
  #       SecurityGroupIds: !Split [',', !FindInMap ['Network', 'securityGroupIds', !Ref 'Stage']]
@@ -159,7 +160,7 @@ Resources:
                 '200':
                   description: '200 response'
                   schema:
-                    $ref: "#/definitions/Response"
+                    $ref: "#/definitions/ResponseData"
               x-amazon-apigateway-integration:
                 uri:
                   Fn::Sub: 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${BooksAPILambdaFunction.Arn}/invocations'
@@ -174,7 +175,7 @@ Resources:
                   application/json: "{\"failureStatus\" : $input.params('status')\n}"
 
         definitions:
-          Response:
+          ResponseData:
             properties:
               errors:
                 collectionFormat: csv

@@ -27,11 +27,3 @@ sam package --template-file ./infra/deploy.yaml --profile personal --s3-bucket $
 
 sam deploy --template-file ./infra/deploy-output.yaml --profile personal --region us-east-1 --s3-bucket $bucket \
     --stack-name books-api-$env --capabilities CAPABILITY_NAMED_IAM --parameter-overrides Stage=$env || die 'Packing deploy'
-
-echo "==============================================="
-echo "3. Delete temp file (sudo)"
-echo "==============================================="
-
-sudo rm ./infra/deploy-output.yaml
-
-echo "Stack deployed with success!"

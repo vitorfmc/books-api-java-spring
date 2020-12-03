@@ -28,17 +28,11 @@ public class GoogleBooksServiceImpl implements GoogleBooksService {
     public GoogleBooksResponse getBookByTitle(String q, Integer limit, Integer offset)
             throws GoogleApiGenericException, DataValidationException {
 
-        LOG.info("[GOOGLE SERVICE] Begin");
-
         if(q == null)  throw new DataValidationException(Arrays.asList("q cannot be null"));
 
         try {
-
             GoogleBooksClient client = clientBuilder.build(url);
-            var resp = client.getBook("+intitle:" + q, limit, offset);
-            LOG.info("[GOOGLE SERVICE] End");
-
-            return resp;
+            return client.getBook("+intitle:" + q, limit, offset);
 
         } catch (InvalidCredentialResponseStatusException | MalformedURLException e) {
             LOG.errorf("Erro interno ao enviar o SMS: %s", e.getMessage());
