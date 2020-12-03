@@ -15,7 +15,7 @@ Parameters:
 Mappings:
   EnvironmentMap:
     ApiGatewayKeyValue:
-      dev: '7a14516b-6c65-4ebd-ac48-5d8829562fd5'
+      dev: 'z'
       hml: 'X'
       prd: 'Y'
   Google:
@@ -33,7 +33,7 @@ Mappings:
       hml: 'subnet-x, subnet-y'
       prd: 'subnet-x, subnet-y'
     allowedIp:
-      dev: 191.234.175.30/32
+      dev: 0.0.0.0/0
       hml: 0.0.0.0/0
       prd: 0.0.0.0/0
 
