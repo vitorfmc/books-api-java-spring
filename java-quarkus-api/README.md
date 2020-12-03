@@ -11,16 +11,16 @@ API Documentation: http://.../swagger-ui/#/
 * GraalVM;
 * Java 11;
 
-##2. Executing and Deploying
+## 2. Executing and Deploying
 
-####2.1 Running the application in dev mode
+#### 2.1 Running the application in dev mode
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
 ./gradlew quarkusDev
 ```
 
-####2.2 Packaging and running the application
+#### 2.2 Packaging and running the application
 
 The application can be packaged using:
 ```shell script
@@ -36,7 +36,7 @@ If you want to build an _über-jar_, execute the following command:
 
 The application is now runnable using `java -jar build/quarkus-google-books-integration-api-1.0.0-SNAPSHOT-runner.jar`.
 
-####2.3 Send to AWS
+#### 2.3 Send to AWS
 
 To deploy the application throw cloudformation, use the script: 
 ```shell script
@@ -52,5 +52,5 @@ You can then execute your native executable with: `./build/quarkus-google-books-
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/gradle-tooling.
 
-##3. Reference
+## 3. Reference
 * Reference for studies: https://quarkus.io/guides/
