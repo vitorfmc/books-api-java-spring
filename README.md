@@ -78,17 +78,22 @@ $ gradle buildRun
 ## 6. Documentation so far
 
 **6.1 Google books:** 
+
 https://developers.google.com/books/docs/v1/using (Last Visit: 02/12/2020)
 
 **6.2 Postman requests (Import and use in Postman):** 
+
 [postman_collection.json](https://raw.githubusercontent.com/vitorfmc/google-books-integration-api/master/help/postman_collection.json)
 
 **6.3 API Documentation:**
 
 **NOTE:** If you are running the API, you can access the documentation using the path: **${APPLICATION_DOMAIN}**/swagger-ui.html
 
+```
 [GET] /v1/book?q=
+```
 
+```
 [POST] /v1/book
 
 Body: { "title":"String", "libraryCode":"String", "catalogingDate":"String"}
@@ -97,9 +102,13 @@ Restrictions:
 - Title must be unique;
 - Code must be unique and can only contains letters and numbers;
 - Cataloging date must be a string with the following format: dd/mm/yyyy
+```
 
+```
 [DELETE] /v1/book/{id}
+```
 
+```
 [PUT] /v1/book/{id}
 
 Body: { "title":"String", "libraryCode":"String", "catalogingDate":"String"}
@@ -108,6 +117,7 @@ Restrictions:
 - Title must be unique;
 - Code must be unique and can only contains letters and numbers;
 - Cataloging date must be a string with the following format: dd/mm/yyyy
+```
 
 ---
     
